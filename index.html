@@ -560,14 +560,15 @@
         window.initFirebaseSync = async function() {
             try {
                 let firebaseConfig = const firebaseConfig = {
-  apiKey: "AIzaSyCQgkkmnQesbH4C980JbxQTEryy2Mj2qCY",
-  authDomain: "ranking-223cd.firebaseapp.com",
-  projectId: "ranking-223cd",
-  storageBucket: "ranking-223cd.firebasestorage.app",
-  messagingSenderId: "88029652941",
-  appId: "1:88029652941:web:568d757f4a020fbe618684",
-  measurementId: "G-VPNLQ1YQ3P"
-};
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyCQgkkmnQesbH4C980JbxQTEryy2Mj2qCY",
+                        authDomain: "ranking-223cd.firebaseapp.com",
+                        projectId: "ranking-223cd",
+                        storageBucket: "ranking-223cd.firebasestorage.app",
+                        messagingSenderId: "88029652941",
+                        appId: "1:88029652941:web:568d757f4a020fbe618684",
+                        measurementId: "G-VPNLQ1YQ3P"
+                    };
 
                 app = initializeApp(firebaseConfig);
                 auth = getAuth(app);
