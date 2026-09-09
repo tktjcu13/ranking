@@ -3,1349 +3,469 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>선부고 세계 전통놀이 랭킹전 - 다문화 어울림 도서관 축제</title>
-    <!-- Tailwind CSS CDN -->
+    <title>선부고 세계 전통놀이 랭킹전</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Canvas Confetti JS for Top Record Celebration -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@700&family=Noto+Sans+KR:wght@300;400;500;600;700;800;900&family=Outfit:wght@600;800&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        library: {
-                            50: '#fdfbf7',
-                            100: '#f7f2e8',
-                            200: '#ebdcc5',
-                            500: '#8c6034',
-                            700: '#5c3d1e',
-                            800: '#3d2611',
-                            900: '#211306'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Noto Sans KR', 'sans-serif'],
-                        serif: ['Gowun Batang', 'serif'],
-                        number: ['Outfit', 'sans-serif']
-                    }
-                }
-            }
-        }
-    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Noto Sans KR', sans-serif;
-            background-color: #f8f6f0;
-            background-image: radial-gradient(#e5dec9 0.75px, transparent 0.75px);
-            background-size: 16px 16px;
-        }
-        .font-batang { font-family: 'Gowun Batang', serif; }
-        .font-num { font-family: 'Outfit', sans-serif; }
-        
-        ::-webkit-scrollbar {
-            width: 6px;
-            height: 6px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #f1ebd9;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #c5b497;
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #a38f70;
-        }
-        
-        .gold-glow {
-            box-shadow: 0 0 25px rgba(234, 179, 8, 0.45);
-        }
-        .board-card {
-            transition: all 0.2s ease-in-out;
-        }
-        .board-card:hover {
-            transform: translateY(-2px);
-        }
-        @keyframes pulse-ring {
-            0% { transform: scale(0.95); opacity: 0.8; }
-            50% { transform: scale(1.05); opacity: 1; }
-            100% { transform: scale(0.95); opacity: 0.8; }
-        }
-        .pulse-active {
-            animation: pulse-ring 1.5s infinite ease-in-out;
-        }
+        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+        * { font-family: 'Pretendard', sans-serif; }
+        .digital-clock { font-family: monospace; letter-spacing: 2px; }
     </style>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 </head>
-<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 text-slate-800 min-h-screen pb-12">
 
-    <header class="bg-amber-900 text-amber-50 shadow-md border-b-4 border-amber-700 sticky top-0 z-30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 rounded-xl bg-amber-700 border border-amber-500/50 flex items-center justify-center text-amber-200 text-xl shadow-inner">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-                <div>
-                    <span class="text-xs font-bold uppercase tracking-wider text-amber-300 block">다문화 어울림 도서관 축제</span>
-                    <h1 class="text-xl sm:text-2xl font-bold font-batang tracking-tight text-white flex items-center gap-2">
-                        선부고 세계 전통놀이 랭킹전
-                    </h1>
-                </div>
+    <!-- Header -->
+    <header class="bg-indigo-900 text-white py-6 px-4 shadow-lg mb-8">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="text-indigo-300 font-semibold text-sm tracking-wider">다문화 어울림 도서관 축제</span>
+                <h1 class="text-3xl font-extrabold flex items-center gap-3 mt-1">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    선부고 세계 전통놀이 랭킹전
+                </h1>
             </div>
-
-            <!-- Real-time Sync Status & Header Action Controls -->
-            <div class="flex items-center gap-2 flex-wrap">
-                <!-- Sync Status Badge -->
-                <div id="sync-status-badge" class="bg-amber-950/80 text-amber-200 text-xs px-3 py-1.5 rounded-lg border border-amber-700/60 flex items-center gap-2">
-                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
-                    <span id="sync-status-text" class="font-medium">동기화 연결 중...</span>
-                </div>
-
-                <button onclick="toggleDisplayMode(true)" class="bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-2 border border-amber-400/30">
-                    <i class="fa-solid fa-tv text-amber-200"></i>
-                    <span>전광판 모드</span>
+            <div class="flex items-center gap-3">
+                <span id="syncBadge" class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-ping"></span>
+                    동기화 연결 중...
+                </span>
+                <button onclick="toggleBillboard()" class="px-4 py-2 bg-indigo-700 hover:bg-indigo-600 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-desktop"></i> 전광판 모드
                 </button>
-                <button onclick="openDataModal()" class="bg-amber-800/80 hover:bg-amber-800 text-amber-100 font-medium text-xs sm:text-sm px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 border border-amber-700">
-                    <i class="fa-solid fa-list-check"></i>
-                    <span class="hidden sm:inline">기록 관리</span>
-                </button>
-                <button onclick="exportToCSV()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-medium text-xs sm:text-sm px-3.5 py-2 rounded-lg shadow-sm transition flex items-center gap-1.5">
-                    <i class="fa-solid fa-file-excel"></i>
-                    <span class="hidden sm:inline">CSV 저장</span>
+                <button onclick="exportToCSV()" class="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-sm font-bold transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-excel"></i> CSV 저장
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-grow w-full">
-        
-        <!-- Key Control Banner Notice -->
-        <div class="bg-amber-100/90 border border-amber-300/80 rounded-2xl p-4 mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-amber-950 shadow-sm">
-            <div class="flex items-center gap-3">
-                <span class="w-9 h-9 rounded-xl bg-amber-600 text-amber-50 flex items-center justify-center shrink-0 shadow-sm">
-                    <i class="fa-solid fa-keyboard text-lg"></i>
-                </span>
-                <div>
-                    <p class="text-sm font-bold text-amber-950">
-                        [Enter] 키를 누르면 스톱워치가 시작/멈춤 됩니다!
-                    </p>
-                    <p class="text-xs text-amber-800 mt-0.5">
-                        스톱워치를 멈추면 학번(5자리 숫자)과 이름을 기록하는 창이 자동으로 열립니다. (여러 노트북 실시간 자동 연동)
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3 text-xs font-semibold text-amber-900 bg-amber-200/70 px-3.5 py-2 rounded-xl self-end md:self-auto border border-amber-300/50">
-                <span>실시간 총 기록: <strong id="stat-total-count" class="text-amber-950 text-sm font-num font-extrabold">0</strong>건</span>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-
-            <div class="lg:col-span-5 space-y-6">
+    <main class="max-w-6xl mx-auto px-4 grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Stopwatch & Register Section -->
+        <section class="lg:col-span-1 space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <h2 class="text-lg font-bold text-slate-700 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-stopwatch text-indigo-600"></i> 스톱워치 (Enter 키 지원)
+                </h2>
                 
-                <div class="bg-white rounded-2xl border border-stone-200 shadow-sm p-5 relative overflow-hidden">
-                    <div class="flex items-center justify-between pb-3 border-b border-stone-100 mb-4">
-                        <h2 class="text-base font-bold text-stone-800 flex items-center gap-2">
-                            <i class="fa-solid fa-stopwatch text-amber-600"></i>
-                            <span>실시간 키보드 스톱워치</span>
-                        </h2>
-                        <span id="timer-status-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-stone-100 text-stone-600">
-                            대기 중
-                        </span>
-                    </div>
-
-                    <!-- Selected Game for Timer -->
-                    <div class="mb-4">
-                        <label class="block text-xs font-bold text-stone-600 mb-1.5">측정 종목 선택</label>
-                        <div class="grid grid-cols-2 gap-2">
-                            <button type="button" id="timer-game-tangram" onclick="setTimerGame('칠교놀이')" class="py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm">
-                                <span>🧩 칠교놀이</span>
-                            </button>
-                            <button type="button" id="timer-game-matryo" onclick="setTimerGame('마트료시카')" class="py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100">
-                                <span>🪆 마트료시카</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Digital Timer Display -->
-                    <div class="bg-stone-900 rounded-2xl p-6 text-center my-3 shadow-inner border border-stone-800 relative">
-                        <div id="stopwatch-display" class="font-num text-5xl sm:text-6xl font-extrabold tracking-wider text-amber-400 drop-shadow-md">
-                            00:00.<span class="text-3xl sm:text-4xl">00</span>
-                        </div>
-                        <div id="enter-key-guide" class="mt-3 inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-stone-800 border border-stone-700 text-[11px] font-medium text-amber-200">
-                            <kbd class="px-2 py-0.5 bg-stone-700 border border-stone-600 rounded text-amber-300 font-mono font-bold text-xs">Enter</kbd>
-                            <span>키로 시작 / 정지</span>
-                        </div>
-                    </div>
-
-                    <!-- Timer Action Buttons -->
-                    <div class="grid grid-cols-2 gap-2.5 mt-4">
-                        <button id="btn-timer-start" onclick="toggleTimer()" class="bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3 px-3 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm">
-                            <i class="fa-solid fa-play"></i> <span id="btn-timer-start-text">스톱워치 시작 (Enter)</span>
-                        </button>
-                        <button id="btn-timer-reset" onclick="resetTimer()" class="bg-stone-200 hover:bg-stone-300 active:bg-stone-400 text-stone-700 font-bold py-3 px-3 rounded-xl transition text-sm flex items-center justify-center gap-1.5">
-                            <i class="fa-solid fa-rotate-right"></i> 초기화
-                        </button>
-                    </div>
-
-                    <!-- Manual Entry Link -->
-                    <div class="mt-4 pt-3 border-t border-stone-100 text-center">
-                        <button onclick="openManualRegisterModal()" class="text-xs text-stone-500 hover:text-amber-700 font-medium underline underline-offset-2">
-                            시간 직접 수동 입력하기
-                        </button>
-                    </div>
+                <div class="bg-slate-900 rounded-xl p-6 text-center text-white mb-6">
+                    <div id="timerDisplay" class="digital-clock text-5xl font-extrabold text-amber-400 mb-2">00:00.00</div>
+                    <p id="timerStatus" class="text-xs text-slate-400">Enter 키를 눌러 시작 / 정지</p>
                 </div>
 
-            </div>
-
-            <div class="lg:col-span-7 space-y-6">
-                
-                <!-- View Control Bar -->
-                <div class="bg-white rounded-2xl border border-stone-200 p-3 shadow-sm flex flex-wrap items-center justify-between gap-3">
-                    <div class="flex items-center bg-stone-100 p-1 rounded-xl">
-                        <button id="tab-btn-both" onclick="switchLeaderboardView('both')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition bg-white text-stone-800 shadow-sm">
-                            <i class="fa-solid fa-columns mr-1"></i> 전체 보기
-                        </button>
-                        <button id="tab-btn-tangram" onclick="switchLeaderboardView('칠교놀이')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-stone-600 hover:text-stone-900">
-                            <span>🧩 칠교놀이</span>
-                        </button>
-                        <button id="tab-btn-matryo" onclick="switchLeaderboardView('마트료시카')" class="px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-stone-600 hover:text-stone-900">
-                            <span>🪆 마트료시카</span>
-                        </button>
-                    </div>
-
-                    <div class="text-xs font-bold text-stone-500">
-                        <i class="fa-solid fa-trophy text-amber-500 mr-1"></i>
-                        <span>실시간 최단 기록 오름차순</span>
-                    </div>
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button id="startStopBtn" onclick="toggleTimer()" class="py-3 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl transition flex items-center justify-center gap-2 shadow-md">
+                        <i id="startStopIcon" class="fa-solid fa-play"></i>
+                        <span id="startStopText">시작 (Enter)</span>
+                    </button>
+                    <button onclick="resetTimer()" class="py-3 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-left"></i> 리셋
+                    </button>
                 </div>
 
-                <!-- Leaderboards Grid Container -->
-                <div id="leaderboard-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
-                    <!-- Tangram Board -->
-                    <div id="board-tangram-wrapper" class="bg-white rounded-2xl border border-indigo-100 shadow-sm overflow-hidden flex flex-col">
-                        <div class="bg-indigo-600 text-white p-4 flex items-center justify-between shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl">🧩</span>
-                                <div>
-                                    <h3 class="font-bold text-base font-batang tracking-wide">칠교놀이 TOP 10</h3>
-                                    <p class="text-[11px] text-indigo-100">조각 맞추기 최단시간 순</p>
-                                </div>
-                            </div>
-                            <span class="text-xs font-bold bg-indigo-700/80 text-indigo-100 px-2.5 py-1 rounded-full border border-indigo-400/30">
-                                선부고
-                            </span>
-                        </div>
-                        <div class="p-3 flex-grow overflow-y-auto max-h-[580px]" id="list-tangram">
-                            <!-- Items dynamically populated -->
-                        </div>
-                    </div>
-
-                    <!-- Matryoshka Board -->
-                    <div id="board-matryo-wrapper" class="bg-white rounded-2xl border border-rose-100 shadow-sm overflow-hidden flex flex-col">
-                        <div class="bg-rose-600 text-white p-4 flex items-center justify-between shadow-sm">
-                            <div class="flex items-center gap-2">
-                                <span class="text-xl">🪆</span>
-                                <div>
-                                    <h3 class="font-bold text-base font-batang tracking-wide">마트료시카 TOP 10</h3>
-                                    <p class="text-[11px] text-rose-100">인형 맞추기 최단시간 순</p>
-                                </div>
-                            </div>
-                            <span class="text-xs font-bold bg-rose-700/80 text-rose-100 px-2.5 py-1 rounded-full border border-rose-400/30">
-                                선부고
-                            </span>
-                        </div>
-                        <div class="p-3 flex-grow overflow-y-auto max-h-[580px]" id="list-matryo">
-                            <!-- Items dynamically populated -->
-                        </div>
-                    </div>
-
-                </div>
-
-            </div>
-
-        </div>
-    </main>
-
-    <!-- Participant Registration Modal (Appears when timer stops) -->
-    <div id="modal-register" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-stone-200 max-w-md w-full p-6 shadow-2xl space-y-5 relative">
-            <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg">
-                        <i class="fa-solid fa-trophy"></i>
+                <!-- Registration Form -->
+                <form id="recordForm" onsubmit="handleManualSubmit(event)" class="space-y-4 pt-4 border-t border-slate-100">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">종목 선택</label>
+                        <select id="gameSelect" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                            <option value="tangram">🧩 칠교놀이 (Tangram)</option>
+                            <option value="matryoshka">🪆 마트료시카 (Matryoshka)</option>
+                        </select>
                     </div>
                     <div>
-                        <h3 class="text-lg font-bold text-stone-900 font-batang">참가자 기록 저장</h3>
-                        <p class="text-xs text-stone-500" id="register-modal-game-badge">종목: 칠교놀이</p>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">학번 (5자리, 예: 10305)</label>
+                        <input type="text" id="studentId" maxlength="5" placeholder="10305" required pattern="\d{5}" title="5자리 숫자 학번을 입력하세요" class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
-                </div>
-                <button type="button" onclick="closeRegisterModal()" class="w-8 h-8 rounded-full bg-stone-100 text-stone-500 hover:bg-stone-200 flex items-center justify-center transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-
-            <!-- Recorded Time Highlight Box -->
-            <div class="bg-stone-900 rounded-2xl p-4 text-center text-amber-400 shadow-inner">
-                <span class="text-xs text-stone-400 font-medium block mb-1">측정된 기록</span>
-                <span id="modal-display-time" class="font-num text-3xl sm:text-4xl font-extrabold">00.00초</span>
-            </div>
-
-            <form id="form-register" onsubmit="handleRegisterSubmit(event)" class="space-y-4">
-                <input type="hidden" id="modal-time-seconds" value="0">
-
-                <!-- Student ID Input (5 digits) -->
-                <div>
-                    <label for="modal-input-student-id" class="block text-xs font-bold text-stone-700 mb-1">
-                        학번 (5자리 숫자) <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
-                            <i class="fa-solid fa-id-card text-xs"></i>
-                        </span>
-                        <input type="text" id="modal-input-student-id" placeholder="예: 10305" maxlength="5" required
-                            class="w-full pl-10 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-num font-bold transition">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">이름</label>
+                        <input type="text" id="studentName" placeholder="홍길동" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
-                    <p id="student-id-error" class="text-[11px] text-rose-500 mt-1 hidden font-semibold">
-                        ⚠️ 학번은 5자리 숫자로 입력해주세요. (예: 10305)
-                    </p>
-                </div>
-
-                <!-- Name Input -->
-                <div>
-                    <label for="modal-input-name" class="block text-xs font-bold text-stone-700 mb-1">
-                        참가자 이름 <span class="text-red-500">*</span>
-                    </label>
-                    <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-stone-400">
-                            <i class="fa-solid fa-user text-xs"></i>
-                        </span>
-                        <input type="text" id="modal-input-name" placeholder="예: 홍길동" required
-                            class="w-full pl-10 pr-3 py-2.5 bg-stone-50 border border-stone-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-medium transition">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 mb-1">기록 (초 단위 / 수동 입력 가능)</label>
+                        <input type="number" step="0.01" id="recordTimeInput" placeholder="예: 12.34" required class="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2 pt-2">
-                    <button type="button" onclick="closeRegisterModal()" class="w-1/3 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs rounded-xl transition">
-                        취소
+                    <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl transition shadow-md flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-plus"></i> 기록 등록하기
                     </button>
-                    <button type="submit" class="w-2/3 py-3 bg-amber-800 hover:bg-amber-700 active:bg-amber-900 text-white font-bold text-xs rounded-xl shadow-md transition flex items-center justify-center gap-1.5">
-                        <i class="fa-solid fa-check"></i>
-                        <span>실시간 저장 (Enter)</span>
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Manual Input Modal -->
-    <div id="modal-manual" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-stone-200 max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <h3 class="text-base font-bold text-stone-900 font-batang">시간 수동 기록 입력</h3>
-                <button onclick="closeManualRegisterModal()" class="w-8 h-8 rounded-full bg-stone-100 text-stone-500 flex items-center justify-center">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+                </form>
             </div>
+        </section>
 
-            <form id="form-manual" onsubmit="handleManualSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1">종목 선택</label>
-                    <select id="manual-game-select" class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-bold">
-                        <option value="칠교놀이">🧩 칠교놀이</option>
-                        <option value="마트료시카">🪆 마트료시카</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1">학번 (5자리)</label>
-                    <input type="text" id="manual-student-id" maxlength="5" placeholder="10305" required class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-num font-bold">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1">이름</label>
-                    <input type="text" id="manual-name" placeholder="홍길동" required class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-stone-700 mb-1">소요 시간(초)</label>
-                    <input type="text" id="manual-time-input" placeholder="14.25" required class="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-num font-bold">
-                </div>
-                <div class="pt-2 flex gap-2">
-                    <button type="button" onclick="closeManualRegisterModal()" class="w-1/3 py-2.5 bg-stone-100 text-stone-700 font-bold text-xs rounded-xl">취소</button>
-                    <button type="submit" class="w-2/3 py-2.5 bg-amber-800 text-white font-bold text-xs rounded-xl">저장</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Fullscreen Presentation Mode (전광판 모드) -->
-    <div id="display-mode-overlay" class="fixed inset-0 bg-stone-950 text-white z-50 hidden overflow-y-auto flex flex-col justify-between p-6 sm:p-10 transition-all duration-300">
-        <!-- Top Presentation Header -->
-        <div class="flex items-center justify-between pb-6 border-b border-stone-800">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-2xl bg-amber-600 text-amber-100 flex items-center justify-center text-2xl shadow-lg border border-amber-400/40">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-                <div>
-                    <span class="text-amber-400 font-bold text-xs tracking-widest uppercase">다문화 어울림 도서관 축제</span>
-                    <h1 class="text-2xl sm:text-4xl font-extrabold font-batang tracking-tight text-amber-100">
-                        선부고 세계 전통놀이 랭킹전
-                    </h1>
-                </div>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="text-right hidden sm:block">
-                    <div id="display-clock-time" class="font-num text-xl font-bold text-amber-400">00:00:00</div>
-                    <div id="display-clock-date" class="text-xs text-stone-400">2026.00.00</div>
-                </div>
-                <button onclick="toggleDisplayMode(false)" class="bg-stone-800 hover:bg-stone-700 text-stone-200 px-4 py-2.5 rounded-xl border border-stone-700 font-bold text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-xmark text-base"></i> 닫기
-                </button>
-            </div>
-        </div>
-
-        <!-- Presentation Content Side-by-Side -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 my-8 flex-grow">
-            <!-- Presentation Tangram -->
-            <div class="bg-stone-900/90 rounded-3xl border border-indigo-900/60 p-6 flex flex-col shadow-2xl backdrop-blur">
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-indigo-900/50">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">🧩</span>
-                        <h2 class="text-2xl font-bold font-batang text-indigo-300">칠교놀이 명예의 전당</h2>
+        <!-- Leaderboard Section -->
+        <section class="lg:col-span-2 space-y-6">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-lg font-bold text-slate-700 flex items-center gap-2">
+                        <i class="fa-solid fa-list-ol text-indigo-600"></i> 실시간 명예의 전당
+                        <span class="text-xs font-normal text-slate-400 ml-1">(학생별 최단 기록만 표시)</span>
+                    </h2>
+                    <div class="flex gap-2">
+                        <button onclick="filterLeaderboard('both')" id="btnFilterBoth" class="px-3 py-1.5 bg-indigo-100 text-indigo-700 font-bold rounded-lg text-xs">전체</button>
+                        <button onclick="filterLeaderboard('tangram')" id="btnFilterTangram" class="px-3 py-1.5 bg-slate-100 text-slate-600 font-bold rounded-lg text-xs">칠교놀이</button>
+                        <button onclick="filterLeaderboard('matryoshka')" id="btnFilterMatryoshka" class="px-3 py-1.5 bg-slate-100 text-slate-600 font-bold rounded-lg text-xs">마트료시카</button>
                     </div>
-                    <span class="text-xs font-bold text-indigo-400 bg-indigo-950 px-3 py-1 rounded-full border border-indigo-800">TOP 5</span>
                 </div>
-                <div id="display-list-tangram" class="space-y-3 flex-grow flex flex-col justify-around">
-                    <!-- Populated dynamically -->
-                </div>
-            </div>
 
-            <!-- Presentation Matryoshka -->
-            <div class="bg-stone-900/90 rounded-3xl border border-rose-900/60 p-6 flex flex-col shadow-2xl backdrop-blur">
-                <div class="flex items-center justify-between mb-6 pb-4 border-b border-rose-900/50">
-                    <div class="flex items-center gap-3">
-                        <span class="text-3xl">🪆</span>
-                        <h2 class="text-2xl font-bold font-batang text-rose-300">마트료시카 명예의 전당</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Tangram Table -->
+                    <div id="tangramBoard" class="space-y-3">
+                        <h3 class="font-bold text-sm text-indigo-900 border-b pb-2 flex items-center justify-between">
+                            <span>🧩 칠교놀이 TOP 10</span>
+                            <span class="text-xs text-slate-400 font-normal">최단 시간순</span>
+                        </h3>
+                        <div id="tangramList" class="space-y-2">
+                            <!-- JS Generated -->
+                        </div>
                     </div>
-                    <span class="text-xs font-bold text-rose-400 bg-rose-950 px-3 py-1 rounded-full border border-rose-800">TOP 5</span>
-                </div>
-                <div id="display-list-matryo" class="space-y-3 flex-grow flex flex-col justify-around">
-                    <!-- Populated dynamically -->
+
+                    <!-- Matryoshka Table -->
+                    <div id="matryoshkaBoard" class="space-y-3">
+                        <h3 class="font-bold text-sm text-indigo-900 border-b pb-2 flex items-center justify-between">
+                            <span>🪆 마트료시카 TOP 10</span>
+                            <span class="text-xs text-slate-400 font-normal">최단 시간순</span>
+                        </h3>
+                        <div id="matryoshkaList" class="space-y-2">
+                            <!-- JS Generated -->
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
+    </main>
+
+    <!-- Billboard Fullscreen Overlay -->
+    <div id="billboardOverlay" class="fixed inset-0 bg-slate-950 text-white z-50 hidden flex-col p-8 overflow-y-auto">
+        <div class="flex justify-between items-center mb-8 border-b border-slate-800 pb-4">
+            <div>
+                <span class="text-amber-400 font-semibold text-lg">다문화 어울림 도서관 축제</span>
+                <h1 class="text-4xl font-extrabold">선부고 세계 전통놀이 랭킹전 (실시간 전광판)</h1>
+            </div>
+            <button onclick="toggleBillboard()" class="px-6 py-3 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition text-lg">
+                <i class="fa-solid fa-xmark"></i> 닫기 (ESC)
+            </button>
         </div>
-
-        <!-- Bottom Footer Info -->
-        <div class="pt-4 border-t border-stone-800 flex items-center justify-between text-xs text-stone-500">
-            <span>📚 선부고등학교 다문화 어울림 도서관 축제 전광판</span>
-            <span class="animate-pulse text-emerald-400 font-medium">● 파이어베이스 실시간 연동 중</span>
-        </div>
-    </div>
-
-    <!-- Data Management Modal -->
-    <div id="modal-data" class="fixed inset-0 bg-stone-900/60 backdrop-blur-sm z-40 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl border border-stone-200 max-w-3xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden">
-            <div class="p-5 bg-stone-100 border-b border-stone-200 flex items-center justify-between">
-                <div class="flex items-center gap-2 text-stone-800 font-bold text-lg">
-                    <i class="fa-solid fa-database text-amber-700"></i>
-                    <span>전체 기록 데이터 관리</span>
-                </div>
-                <button onclick="closeDataModal()" class="w-8 h-8 rounded-full bg-stone-200 text-stone-600 flex items-center justify-center hover:bg-stone-300 transition">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
+        <div class="grid grid-cols-2 gap-8 flex-1">
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-amber-400 mb-4 pb-2 border-b border-slate-800">🧩 칠교놀이 실시간 랭킹</h2>
+                <div id="billboardTangramList" class="space-y-3"></div>
             </div>
-
-            <div class="p-4 border-b border-stone-100 flex flex-wrap items-center justify-between gap-3 bg-stone-50">
-                <div class="relative flex-grow max-w-xs">
-                    <input type="text" id="modal-search-input" oninput="renderModalTable()" placeholder="학번 또는 이름 검색..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-white border border-stone-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                    <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-2 text-stone-400 text-xs"></i>
-                </div>
-                
-                <div class="flex items-center gap-2">
-                    <button onclick="loadSampleData()" class="px-3 py-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 rounded-lg hover:bg-indigo-100 transition">
-                        <i class="fa-solid fa-wand-magic-sparkles mr-1"></i> 테스트 샘플 입력
-                    </button>
-                    <button onclick="openConfirmResetModal()" class="px-3 py-1.5 text-xs font-bold text-rose-700 bg-rose-50 border border-rose-200 rounded-lg hover:bg-rose-100 transition">
-                        <i class="fa-solid fa-trash-can mr-1"></i> 전체 초기화
-                    </button>
-                </div>
-            </div>
-
-            <div class="p-4 overflow-y-auto flex-grow">
-                <table class="w-full text-left text-xs border-collapse">
-                    <thead>
-                        <tr class="bg-stone-100 text-stone-600 font-bold border-b border-stone-200">
-                            <th class="p-2.5">종목</th>
-                            <th class="p-2.5">학번</th>
-                            <th class="p-2.5">이름</th>
-                            <th class="p-2.5">소요시간</th>
-                            <th class="p-2.5">등록시각</th>
-                            <th class="p-2.5 text-center">삭제</th>
-                        </tr>
-                    </thead>
-                    <tbody id="modal-table-body" class="divide-y divide-stone-100">
-                        <!-- Populated dynamically -->
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="p-4 bg-stone-100 border-t border-stone-200 text-right">
-                <button onclick="closeDataModal()" class="px-4 py-2 bg-stone-700 text-white font-bold text-xs rounded-xl hover:bg-stone-800 transition">
-                    닫기
-                </button>
+            <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+                <h2 class="text-2xl font-bold text-emerald-400 mb-4 pb-2 border-b border-slate-800">🪆 마트료시카 실시간 랭킹</h2>
+                <div id="billboardMatryoshkaList" class="space-y-3"></div>
             </div>
         </div>
     </div>
 
-    <!-- Confirm Reset Modal -->
-    <div id="modal-confirm-reset" class="fixed inset-0 bg-stone-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl border border-stone-200">
-            <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center text-xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <h3 class="text-lg font-bold text-stone-900">전체 데이터를 삭제하시겠습니까?</h3>
-            <p class="text-xs text-stone-600 leading-relaxed">
-                모든 참가자 기록이 공유 데이터베이스에서 삭제됩니다.<br>
-                삭제 전 엑셀(CSV) 저장으로 백업하시는 것을 권장합니다.
-            </p>
-            <div class="flex items-center gap-3 pt-2">
-                <button onclick="closeConfirmResetModal()" class="flex-1 py-2.5 bg-stone-100 text-stone-700 text-xs font-bold rounded-xl hover:bg-stone-200 transition">
-                    취소
-                </button>
-                <button onclick="executeResetAllData()" class="flex-1 py-2.5 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-500 transition shadow-sm">
-                    확인 (모두 삭제)
-                </button>
-            </div>
-        </div>
-    </div>
+    <!-- Firebase App Logic -->
+    <script>
+        // ⚠️ [중요] 아래 firebaseConfig 객체를 파이어베이스의 실제 키로 넣어주세요.
+        const firebaseConfig = {
+            apiKey: "AIzaSyCQgkkmnQesbH4C980JbxQTEryy2Mj2qCY",
+            authDomain: "ranking-223cd.firebaseapp.com",
+            projectId: "ranking-223cd",
+            storageBucket: "ranking-223cd.firebasestorage.app",
+            messagingSenderId: "88029652941",
+            appId: "1:88029652941:web:568d757f4a020fbe618684",
+            measurementId: "G-VPNLQ1YQ3P"
+        };
 
-    <!-- Toast Notification Message Container -->
-    <div id="toast-container" class="fixed bottom-5 right-5 z-50 space-y-2 pointer-events-none"></div>
-
-    <!-- Footer -->
-    <footer class="bg-stone-900 text-stone-400 text-xs py-4 px-4 text-center border-t border-stone-800 mt-8">
-        <p class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
-            <span>📚 선부고등학교 다문화 어울림 도서관 축제 | 전통놀이 실시간 랭킹 시스템</span>
-            <span class="text-stone-500">도서관 Wi-Fi를 통해 여러 노트북에서 실시간 자동 동기화 중</span>
-        </p>
-    </footer>
-
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, addDoc, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        /* ==========================================================================
-           1. Firebase & App Global State
-           ========================================================================== */
-        const STORAGE_KEY = 'sunbugo_library_ranking_records_v2';
-        window.records = [];
-        window.currentLeaderboardView = 'both';
-        
-        let app = null;
-        let auth = null;
         let db = null;
-        let currentUser = null;
-        
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'sunbugo-ranking-app';
+        let records = [];
 
-        window.initFirebaseSync = async function() {
-            try {
-                const firebaseConfig = {
-                        apiKey: "AIzaSyCQgkkmnQesbH4C980JbxQTEryy2Mj2qCY",
-                        authDomain: "ranking-223cd.firebaseapp.com",
-                        projectId: "ranking-223cd",
-                        storageBucket: "ranking-223cd.firebasestorage.app",
-                        messagingSenderId: "88029652941",
-                        appId: "1:88029652941:web:568d757f4a020fbe618684",
-                        measurementId: "G-VPNLQ1YQ3P"
-                };
-
-                app = initializeApp(firebaseConfig);
-                auth = getAuth(app);
-                db = getFirestore(app);
-
-                // Rule 3: Auth before queries
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-
-                onAuthStateChanged(auth, (user) => {
-                    if (user) {
-                        currentUser = user;
-                        updateSyncBadge(true, "🟢 실시간 다중 기기 연동 중");
-                        subscribeToRealtimeRecords();
-                    } else {
-                        updateSyncBadge(false, "인증 필요");
-                    }
-                });
-
-            } catch (err) {
-                console.error("Firebase Initialization Error:", err);
-                updateSyncBadge(false, "로컬 모드 (서버 미연결)");
+        // Initialize Firebase
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            
+            // Anonymous Auth
+            firebase.auth().signInAnonymously().then(() => {
+                updateSyncStatus(true, "🟢 실시간 다중 기기 연동 중");
+                subscribeRealtime();
+            }).catch(err => {
+                console.error("Auth Error:", err);
+                updateSyncStatus(false, "🟡 로컬 저장 모드");
                 loadLocalRecords();
+            });
+        } catch(e) {
+            console.error("Firebase Init Error:", e);
+            updateSyncStatus(false, "🟡 로컬 저장 모드");
+            loadLocalRecords();
+        }
+
+        function updateSyncStatus(isOnline, message) {
+            const badge = document.getElementById('syncBadge');
+            if (isOnline) {
+                badge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span> ${message}`;
+            } else {
+                badge.className = "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30";
+                badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-amber-400"></span> ${message}`;
             }
-        };
+        }
 
-        function subscribeToRealtimeRecords() {
-            if (!db || !currentUser) return;
-
-            // Rule 1: Public path
-            const recordsRef = collection(db, 'artifacts', appId, 'public', 'data', 'records');
-
-            // Rule 2: Simple query without orderBy/where
-            onSnapshot(recordsRef, (snapshot) => {
-                const updatedRecords = [];
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    updatedRecords.push({
-                        id: docSnap.id,
-                        studentId: data.studentId || '',
-                        name: data.name || '',
-                        game: data.game || '칠교놀이',
-                        timeInSeconds: parseFloat(data.timeInSeconds || 0),
-                        timestamp: data.timestamp || ''
-                    });
+        // Realtime Subscription
+        function subscribeRealtime() {
+            db.collection('records').onSnapshot(snapshot => {
+                records = [];
+                snapshot.forEach(doc => {
+                    records.push({ id: doc.id, ...doc.data() });
                 });
-
-                // Check for new #1 record before setting window.records
-                checkNewTopRecord(updatedRecords);
-
-                window.records = updatedRecords;
-                saveToLocalStorageBackup();
-                renderAll();
-            }, (error) => {
-                console.error("Firestore onSnapshot subscription error:", error);
-                updateSyncBadge(false, "동기화 오류");
-                showToast("실시간 서버 연결 오류 발생. 로컬 데이터 모드로 가동합니다.", "warning");
+                renderLeaderboards();
+            }, err => {
+                console.error("Firestore Subscribe Error:", err);
             });
-        }
-
-        window.saveNewRecord = async function(studentId, name, game, timeSeconds) {
-            const currentTop = getTopRecordForGame(game);
-            const isNewNumberOne = (!currentTop || timeSeconds < currentTop.timeInSeconds);
-
-            const recordData = {
-                studentId: studentId,
-                name: name,
-                game: game,
-                timeInSeconds: timeSeconds,
-                timestamp: getFormattedNow(),
-                createdAt: Date.now()
-            };
-
-            if (db && currentUser) {
-                try {
-                    const recordsRef = collection(db, 'artifacts', appId, 'public', 'data', 'records');
-                    await addDoc(recordsRef, recordData);
-                    showToast(`${studentId} ${name} 님의 기록이 실시간 공유되었습니다!`, 'success');
-                } catch (e) {
-                    console.error("Firebase Add Record Error:", e);
-                    recordData.id = 'rec_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-                    window.records.push(recordData);
-                    saveToLocalStorageBackup();
-                    renderAll();
-                    showToast(`${studentId} ${name} 님의 기록이 저장되었습니다.`, 'info');
-                }
-            } else {
-                recordData.id = 'rec_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
-                window.records.push(recordData);
-                saveToLocalStorageBackup();
-                renderAll();
-                showToast(`${studentId} ${name} 님의 기록이 저장되었습니다.`, 'success');
-            }
-
-            if (isNewNumberOne) {
-                triggerConfetti();
-                showToast(`🎉 축하합니다! ${name} 님이 [${game}] 최고 기록(1위)을 경신했습니다!`, 'gold');
-            }
-        };
-
-        window.deleteRecord = async function(id) {
-            if (db && currentUser) {
-                try {
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'records', id);
-                    await deleteDoc(docRef);
-                    showToast('기록이 삭제되었습니다.', 'info');
-                } catch (e) {
-                    console.error("Delete doc error:", e);
-                    window.records = window.records.filter(r => r.id !== id);
-                    saveToLocalStorageBackup();
-                    renderAll();
-                    renderModalTable();
-                }
-            } else {
-                window.records = window.records.filter(r => r.id !== id);
-                saveToLocalStorageBackup();
-                renderAll();
-                renderModalTable();
-                showToast('기록이 삭제되었습니다.', 'info');
-            }
-        };
-
-        window.executeResetAllData = async function() {
-            if (db && currentUser) {
-                try {
-                    const recordsRef = collection(db, 'artifacts', appId, 'public', 'data', 'records');
-                    const snapshot = await getDocs(recordsRef);
-                    const deletePromises = [];
-                    snapshot.forEach((docSnap) => {
-                        deletePromises.push(deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'records', docSnap.id)));
-                    });
-                    await Promise.all(deletePromises);
-                    showToast('모든 공유 데이터가 초기화되었습니다.', 'warning');
-                } catch (e) {
-                    console.error("Reset error:", e);
-                    window.records = [];
-                    saveToLocalStorageBackup();
-                    renderAll();
-                }
-            } else {
-                window.records = [];
-                saveToLocalStorageBackup();
-                renderAll();
-            }
-            renderModalTable();
-            closeConfirmResetModal();
-            closeDataModal();
-        };
-
-        function checkNewTopRecord(newRecordsList) {
-            ['칠교놀이', '마트료시카'].forEach(game => {
-                const oldTop = getTopRecordForGame(game);
-                const gameNewRecords = newRecordsList.filter(r => r.game === game).sort((a,b) => a.timeInSeconds - b.timeInSeconds);
-                const newTop = gameNewRecords[0];
-
-                if (newTop && oldTop && newTop.id !== oldTop.id && newTop.timeInSeconds < oldTop.timeInSeconds) {
-                    triggerConfetti();
-                    showToast(`🎉 [실시간 연동] ${newTop.name} 님이 [${game}] 1위 신기록을 달성했습니다! (${formatDisplayTime(newTop.timeInSeconds)})`, 'gold');
-                }
-            });
-        }
-
-        function updateSyncBadge(isConnected, labelText) {
-            const badge = document.getElementById('sync-status-badge');
-            const text = document.getElementById('sync-status-text');
-            if (isConnected) {
-                badge.className = "bg-emerald-950/80 text-emerald-200 text-xs px-3 py-1.5 rounded-lg border border-emerald-600/60 flex items-center gap-2";
-                text.innerText = labelText || "🟢 실시간 다중 기기 연동 중";
-            } else {
-                badge.className = "bg-stone-800 text-stone-300 text-xs px-3 py-1.5 rounded-lg border border-stone-700 flex items-center gap-2";
-                text.innerText = labelText || "로컬 단독 모드";
-            }
-        }
-
-        function saveToLocalStorageBackup() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(window.records));
-            } catch(e) {}
         }
 
         function loadLocalRecords() {
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                if (stored) window.records = JSON.parse(stored);
-            } catch(e) {
-                window.records = [];
-            }
-            renderAll();
+            const saved = localStorage.getItem('sunbo_records');
+            records = saved ? JSON.parse(saved) : [];
+            renderLeaderboards();
         }
 
-        window.addEventListener('DOMContentLoaded', () => {
-            window.initFirebaseSync();
-        });
-    </script>
+        function saveLocalRecords() {
+            localStorage.setItem('sunbo_records', JSON.stringify(records));
+            renderLeaderboards();
+        }
 
-    <script>
-        /* ==========================================================================
-           2. Stopwatch Timer & UI Logic
-           ========================================================================== */
-        let timerInterval = null;
-        let timerStartTime = 0;
-        let timerElapsedTime = 0;
-        let isTimerRunning = false;
-        let selectedTimerGame = '칠교놀이';
+        // 💡 핵심: 동일 학번(studentId) 중복 제거 및 최고 기록(최단 시간)만 필터링
+        function getDeduplicatedBestRecords(gameType) {
+            const filtered = records.filter(r => r.game === gameType);
+            const bestMap = {};
 
-        function setTimerGame(game) {
-            selectedTimerGame = game;
-            const btnTangram = document.getElementById('timer-game-tangram');
-            const btnMatryo = document.getElementById('timer-game-matryo');
+            filtered.forEach(rec => {
+                const key = rec.studentId || rec.name; // 학번 기준
+                const timeVal = parseFloat(rec.time);
 
-            if (game === '칠교놀이') {
-                btnTangram.className = 'py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-indigo-500 bg-indigo-50 text-indigo-700 shadow-sm';
-                btnMatryo.className = 'py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100';
+                if (!bestMap[key] || timeVal < parseFloat(bestMap[key].time)) {
+                    bestMap[key] = rec;
+                }
+            });
+
+            return Object.values(bestMap).sort((a, b) => parseFloat(a.time) - parseFloat(b.time));
+        }
+
+        // Render Leaderboards
+        function renderLeaderboards() {
+            const tangramBest = getDeduplicatedBestRecords('tangram');
+            const matryoshkaBest = getDeduplicatedBestRecords('matryoshka');
+
+            renderList('tangramList', tangramBest.slice(0, 10));
+            renderList('matryoshkaList', matryoshkaBest.slice(0, 10));
+            
+            renderBillboardList('billboardTangramList', tangramBest.slice(0, 10));
+            renderBillboardList('billboardMatryoshkaList', matryoshkaBest.slice(0, 10));
+        }
+
+        function renderList(elementId, listData) {
+            const container = document.getElementById(elementId);
+            if (listData.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4">등록된 기록이 없습니다.</p>`;
+                return;
+            }
+
+            container.innerHTML = listData.map((item, idx) => {
+                let medal = `<span class="w-6 font-bold text-slate-400 text-sm">${idx + 1}</span>`;
+                if (idx === 0) medal = `<span class="w-6 text-amber-500 font-bold"><i class="fa-solid fa-crown"></i></span>`;
+                else if (idx === 1) medal = `<span class="w-6 text-slate-400 font-bold"><i class="fa-solid fa-medal"></i></span>`;
+                else if (idx === 2) medal = `<span class="w-6 text-amber-700 font-bold"><i class="fa-solid fa-award"></i></span>`;
+
+                return `
+                    <div class="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 rounded-lg text-sm transition">
+                        <div class="flex items-center gap-2">
+                            ${medal}
+                            <span class="font-bold text-slate-700">${item.studentId || ''} ${item.name}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="digital-clock font-extrabold text-indigo-600">${parseFloat(item.time).toFixed(2)}초</span>
+                            <button onclick="deleteRecord('${item.id}')" class="text-slate-300 hover:text-red-500 text-xs transition"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function renderBillboardList(elementId, listData) {
+            const container = document.getElementById(elementId);
+            if (listData.length === 0) {
+                container.innerHTML = `<p class="text-slate-500 text-center py-8">기록 대기 중...</p>`;
+                return;
+            }
+
+            container.innerHTML = listData.map((item, idx) => {
+                let rankStyle = "text-slate-400";
+                if (idx === 0) rankStyle = "text-amber-400 text-xl font-black";
+                else if (idx === 1) rankStyle = "text-slate-300 text-lg font-bold";
+                else if (idx === 2) rankStyle = "text-amber-600 text-lg font-bold";
+
+                return `
+                    <div class="flex items-center justify-between p-3 bg-slate-900/80 rounded-xl border border-slate-800">
+                        <div class="flex items-center gap-4">
+                            <span class="w-8 ${rankStyle}">${idx + 1}</span>
+                            <span class="font-bold text-lg text-slate-200">${item.studentId || ''} ${item.name}</span>
+                        </div>
+                        <span class="digital-clock text-2xl font-extrabold text-amber-400">${parseFloat(item.time).toFixed(2)}s</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Add Record
+        async function addRecord(game, studentId, name, time) {
+            const recordData = {
+                game,
+                studentId,
+                name,
+                time: parseFloat(time).toFixed(2),
+                createdAt: new Date().toISOString()
+            };
+
+            if (db) {
+                await db.collection('records').add(recordData);
             } else {
-                btnMatryo.className = 'py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-rose-500 bg-rose-50 text-rose-700 shadow-sm';
-                btnTangram.className = 'py-2.5 px-3 text-xs font-bold rounded-xl border flex items-center justify-center gap-1.5 transition border-stone-200 bg-stone-50 text-stone-600 hover:bg-stone-100';
+                records.push({ id: Date.now().toString(), ...recordData });
+                saveLocalRecords();
             }
         }
 
-        // Global Keyboard Event Listener for Enter key
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                const registerModal = document.getElementById('modal-register');
-                const manualModal = document.getElementById('modal-manual');
-                const dataModal = document.getElementById('modal-data');
+        async function deleteRecord(id) {
+            if (!confirm('이 기록을 삭제하시겠습니까?')) return;
+            if (db) {
+                await db.collection('records').doc(id).delete();
+            } else {
+                records = records.filter(r => r.id !== id);
+                saveLocalRecords();
+            }
+        }
 
-                // If any modal is open, form handling handles Enter key
-                if (!registerModal.classList.contains('hidden') || 
-                    !manualModal.classList.contains('hidden') || 
-                    !dataModal.classList.contains('hidden')) {
-                    return;
-                }
+        function handleManualSubmit(e) {
+            e.preventDefault();
+            const game = document.getElementById('gameSelect').value;
+            const studentId = document.getElementById('studentId').value.trim();
+            const name = document.getElementById('studentName').value.trim();
+            const time = document.getElementById('recordTimeInput').value;
 
-                // Do not toggle timer if focused on an input or textarea
-                const activeTag = document.activeElement ? document.activeElement.tagName.toLowerCase() : '';
-                if (activeTag === 'input' || activeTag === 'textarea' || activeTag === 'select') {
-                    return;
-                }
+            if (studentId.length !== 5) {
+                alert('학번은 5자리 숫자로 입력해 주세요 (예: 10305)');
+                return;
+            }
 
+            addRecord(game, studentId, name, time);
+            
+            document.getElementById('studentId').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('recordTimeInput').value = '';
+            alert('기록이 등록되었습니다!');
+        }
+
+        // Timer Logic
+        let timerInterval = null;
+        let startTime = 0;
+        let elapsedTime = 0;
+        let isRunning = false;
+
+        function toggleTimer() {
+            if (isRunning) {
+                // Stop
+                clearInterval(timerInterval);
+                isRunning = false;
+                document.getElementById('startStopText').innerText = '시작 (Enter)';
+                document.getElementById('startStopIcon').className = 'fa-solid fa-play';
+                
+                // Auto fill time into input
+                const finalSeconds = (elapsedTime / 1000).toFixed(2);
+                document.getElementById('recordTimeInput').value = finalSeconds;
+            } else {
+                // Start
+                startTime = Date.now() - elapsedTime;
+                timerInterval = setInterval(() => {
+                    elapsedTime = Date.now() - startTime;
+                    updateTimerDisplay(elapsedTime);
+                }, 10);
+                isRunning = true;
+                document.getElementById('startStopText').innerText = '정지 (Enter)';
+                document.getElementById('startStopIcon').className = 'fa-solid fa-pause';
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            elapsedTime = 0;
+            updateTimerDisplay(0);
+            document.getElementById('startStopText').innerText = '시작 (Enter)';
+            document.getElementById('startStopIcon').className = 'fa-solid fa-play';
+            document.getElementById('recordTimeInput').value = '';
+        }
+
+        function updateTimerDisplay(timeMs) {
+            const totalSec = Math.floor(timeMs / 1000);
+            const mins = Math.floor(totalSec / 60).toString().padStart(2, '0');
+            const secs = (totalSec % 60).toString().padStart(2, '0');
+            const ms = Math.floor((timeMs % 1000) / 10).toString().padStart(2, '0');
+            document.getElementById('timerDisplay').innerText = `${mins}:${secs}.${ms}`;
+        }
+
+        // Enter key shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target.tagName !== 'INPUT' && e.target.tagName !== 'SELECT') {
                 e.preventDefault();
                 toggleTimer();
             }
         });
 
-        function toggleTimer() {
-            if (isTimerRunning) {
-                pauseTimerAndOpenRegister();
-            } else {
-                startTimer();
-            }
+        // UI Helpers
+        function toggleBillboard() {
+            const overlay = document.getElementById('billboardOverlay');
+            overlay.classList.toggle('hidden');
+            overlay.classList.toggle('flex');
         }
 
-        function startTimer() {
-            if (isTimerRunning) return;
-            isTimerRunning = true;
-            timerStartTime = Date.now() - timerElapsedTime;
-            timerInterval = setInterval(updateTimerDisplay, 10);
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('billboardOverlay').classList.add('hidden');
+                document.getElementById('billboardOverlay').classList.remove('flex');
+            }
+        });
 
-            document.getElementById('btn-timer-start-text').innerText = '스톱워치 정지 (Enter)';
-            document.getElementById('btn-timer-start').className = 'bg-rose-600 hover:bg-rose-500 active:bg-rose-700 text-white font-bold py-3 px-3 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm pulse-active';
+        function filterLeaderboard(type) {
+            const tangramBoard = document.getElementById('tangramBoard');
+            const matryoshkaBoard = document.getElementById('matryoshkaBoard');
             
-            const badge = document.getElementById('timer-status-badge');
-            badge.innerText = '측정 중...';
-            badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 animate-pulse';
-        }
-
-        function pauseTimerAndOpenRegister() {
-            if (!isTimerRunning) return;
-            isTimerRunning = false;
-            clearInterval(timerInterval);
-
-            document.getElementById('btn-timer-start-text').innerText = '스톱워치 시작 (Enter)';
-            document.getElementById('btn-timer-start').className = 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3 px-3 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm';
-
-            const badge = document.getElementById('timer-status-badge');
-            badge.innerText = '정지됨';
-            badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-100 text-amber-800';
-
-            // Auto Open Participant Registration Modal
-            openRegisterModal();
-        }
-
-        function resetTimer() {
-            clearInterval(timerInterval);
-            isTimerRunning = false;
-            timerElapsedTime = 0;
-
-            document.getElementById('stopwatch-display').innerHTML = '00:00.<span class="text-3xl sm:text-4xl">00</span>';
-            document.getElementById('btn-timer-start-text').innerText = '스톱워치 시작 (Enter)';
-            document.getElementById('btn-timer-start').className = 'bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold py-3 px-3 rounded-xl transition text-sm flex items-center justify-center gap-2 shadow-sm';
-
-            const badge = document.getElementById('timer-status-badge');
-            badge.innerText = '대기 중';
-            badge.className = 'px-2.5 py-0.5 rounded-full text-xs font-bold bg-stone-100 text-stone-600';
-        }
-
-        function updateTimerDisplay() {
-            timerElapsedTime = Date.now() - timerStartTime;
-            const formatted = formatTimeFromMs(timerElapsedTime);
-            document.getElementById('stopwatch-display').innerHTML = `${formatted.mins}:${formatted.secs}.<span class="text-3xl sm:text-4xl">${formatted.ms}</span>`;
-        }
-
-        function formatTimeFromMs(msTotal) {
-            const mins = String(Math.floor(msTotal / 60000)).padStart(2, '0');
-            const secs = String(Math.floor((msTotal % 60000) / 1000)).padStart(2, '0');
-            const ms = String(Math.floor((msTotal % 1000) / 10)).padStart(2, '0');
-            return { mins, secs, ms, totalSeconds: msTotal / 1000 };
-        }
-
-        function formatDisplayTime(totalSeconds) {
-            if (totalSeconds < 60) {
-                return `${totalSeconds.toFixed(2)}초`;
-            }
-            const mins = Math.floor(totalSeconds / 60);
-            const secs = (totalSeconds % 60).toFixed(2);
-            return `${mins}분 ${secs < 10 ? '0' : ''}${secs}초`;
-        }
-
-        /* ==========================================================================
-           3. Registration Modal & Student ID Validation
-           ========================================================================== */
-        function openRegisterModal() {
-            if (timerElapsedTime === 0) {
-                showToast('측정된 시간이 없습니다.', 'warning');
-                return;
-            }
-
-            const secVal = (timerElapsedTime / 1000);
-            document.getElementById('modal-time-seconds').value = secVal;
-            document.getElementById('modal-display-time').innerText = formatDisplayTime(secVal);
-            document.getElementById('register-modal-game-badge').innerText = `종목: ${selectedTimerGame}`;
-            
-            document.getElementById('modal-input-student-id').value = '';
-            document.getElementById('modal-input-name').value = '';
-            document.getElementById('student-id-error').classList.add('hidden');
-
-            document.getElementById('modal-register').classList.remove('hidden');
-            
-            setTimeout(() => {
-                document.getElementById('modal-input-student-id').focus();
-            }, 100);
-        }
-
-        function closeRegisterModal() {
-            document.getElementById('modal-register').classList.add('hidden');
-        }
-
-        function handleRegisterSubmit(e) {
-            e.preventDefault();
-
-            const studentIdInput = document.getElementById('modal-input-student-id').value.trim();
-            const nameInput = document.getElementById('modal-input-name').value.trim();
-            const timeSeconds = parseFloat(document.getElementById('modal-time-seconds').value);
-
-            // Validate 5-digit Student ID (e.g. 10305)
-            const idRegex = /^\d{5}$/;
-            if (!idRegex.test(studentIdInput)) {
-                document.getElementById('student-id-error').classList.remove('hidden');
-                document.getElementById('modal-input-student-id').focus();
-                return;
+            if (type === 'tangram') {
+                tangramBoard.classList.remove('hidden');
+                matryoshkaBoard.classList.add('hidden');
+            } else if (type === 'matryoshka') {
+                tangramBoard.classList.add('hidden');
+                matryoshkaBoard.classList.remove('hidden');
             } else {
-                document.getElementById('student-id-error').classList.add('hidden');
-            }
-
-            if (!nameInput) {
-                showToast('이름을 입력해 주세요.', 'warning');
-                return;
-            }
-
-            if (typeof window.saveNewRecord === 'function') {
-                window.saveNewRecord(studentIdInput, nameInput, selectedTimerGame, timeSeconds);
-            }
-
-            closeRegisterModal();
-            resetTimer();
-        }
-
-        function getTopRecordForGame(game) {
-            let filtered = window.records.filter(r => r.game === game);
-            if (filtered.length === 0) return null;
-            filtered.sort((a, b) => a.timeInSeconds - b.timeInSeconds);
-            return filtered[0];
-        }
-
-        /* ==========================================================================
-           4. Leaderboard Rendering
-           ========================================================================== */
-        function renderAll() {
-            renderLeaderboards();
-        }
-
-        function renderLeaderboards() {
-            const tangramContainer = document.getElementById('list-tangram');
-            const tangramRecords = getSortedRecords('칠교놀이');
-            tangramContainer.innerHTML = renderRecordListHtml(tangramRecords, 'indigo');
-
-            const matryoContainer = document.getElementById('list-matryo');
-            const matryoRecords = getSortedRecords('마트료시카');
-            matryoContainer.innerHTML = renderRecordListHtml(matryoRecords, 'rose');
-
-            document.getElementById('stat-total-count').innerText = window.records.length;
-            renderPresentationMode();
-        }
-
-        function getSortedRecords(game) {
-            let list = window.records.filter(r => r.game === game);
-            list.sort((a, b) => a.timeInSeconds - b.timeInSeconds);
-            return list.slice(0, 10);
-        }
-
-        function renderRecordListHtml(recordList, themeColor) {
-            if (recordList.length === 0) {
-                return `
-                    <div class="py-12 text-center text-stone-400">
-                        <i class="fa-solid fa-trophy text-3xl mb-2 text-stone-300"></i>
-                        <p class="text-xs font-medium">아직 등록된 기록이 없습니다.</p>
-                        <p class="text-[11px] text-stone-400 mt-0.5">첫 번째 도전에 참여해보세요!</p>
-                    </div>
-                `;
-            }
-
-            return recordList.map((rec, idx) => {
-                const rank = idx + 1;
-                let rankIcon = '';
-                let borderStyle = 'border-stone-100 bg-stone-50/50';
-
-                if (rank === 1) {
-                    rankIcon = '🥇';
-                    borderStyle = 'border-amber-300 bg-gradient-to-r from-amber-50 to-amber-100/70 shadow-sm gold-glow';
-                } else if (rank === 2) {
-                    rankIcon = '🥈';
-                    borderStyle = 'border-slate-300 bg-slate-50 shadow-sm';
-                } else if (rank === 3) {
-                    rankIcon = '🥉';
-                    borderStyle = 'border-amber-700/20 bg-amber-900/5 shadow-sm';
-                } else {
-                    rankIcon = `<span class="font-num font-extrabold text-stone-500 text-xs">${rank}위</span>`;
-                }
-
-                return `
-                    <div class="board-card p-3 my-1.5 rounded-xl border ${borderStyle} flex items-center justify-between gap-3">
-                        <div class="flex items-center gap-3">
-                            <div class="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-base">
-                                ${rankIcon}
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-xs font-bold text-amber-900 bg-amber-200/60 px-1.5 py-0.5 rounded font-num">${escapeHtml(rec.studentId)}</span>
-                                    <span class="font-bold text-sm text-stone-800">${escapeHtml(rec.name)}</span>
-                                </div>
-                                <span class="text-[10px] text-stone-400 block mt-0.5">${rec.timestamp}</span>
-                            </div>
-                        </div>
-
-                        <div class="text-right">
-                            <span class="font-num font-extrabold text-base text-${themeColor}-700 block">
-                                ${formatDisplayTime(rec.timeInSeconds)}
-                            </span>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function switchLeaderboardView(viewMode) {
-            window.currentLeaderboardView = viewMode;
-            const tangramWrapper = document.getElementById('board-tangram-wrapper');
-            const matryoWrapper = document.getElementById('board-matryo-wrapper');
-            const grid = document.getElementById('leaderboard-grid');
-
-            const btnBoth = document.getElementById('tab-btn-both');
-            const btnTangram = document.getElementById('tab-btn-tangram');
-            const btnMatryo = document.getElementById('tab-btn-matryo');
-
-            [btnBoth, btnTangram, btnMatryo].forEach(b => {
-                b.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition text-stone-600 hover:text-stone-900';
-            });
-
-            if (viewMode === 'both') {
-                btnBoth.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition bg-white text-stone-800 shadow-sm';
-                tangramWrapper.classList.remove('hidden');
-                matryoWrapper.classList.remove('hidden');
-                grid.className = 'grid grid-cols-1 md:grid-cols-2 gap-6';
-            } else if (viewMode === '칠교놀이') {
-                btnTangram.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition bg-indigo-600 text-white shadow-sm';
-                tangramWrapper.classList.remove('hidden');
-                matryoWrapper.classList.add('hidden');
-                grid.className = 'grid grid-cols-1 gap-6';
-            } else {
-                btnMatryo.className = 'px-3.5 py-1.5 text-xs font-bold rounded-lg transition bg-rose-600 text-white shadow-sm';
-                tangramWrapper.add('hidden');
-                matryoWrapper.classList.remove('hidden');
-                grid.className = 'grid grid-cols-1 gap-6';
+                tangramBoard.classList.remove('hidden');
+                matryoshkaBoard.classList.remove('hidden');
             }
         }
 
-        /* ==========================================================================
-           5. Presentation Mode (전광판 모드)
-           ========================================================================== */
-        function toggleDisplayMode(show) {
-            const overlay = document.getElementById('display-mode-overlay');
-            if (show) {
-                overlay.classList.remove('hidden');
-                renderPresentationMode();
-            } else {
-                overlay.classList.add('hidden');
-            }
-        }
-
-        function renderPresentationMode() {
-            const tangramList = getSortedRecords('칠교놀이').slice(0, 5);
-            const matryoList = getSortedRecords('마트료시카').slice(0, 5);
-
-            document.getElementById('display-list-tangram').innerHTML = renderPresentationItemsHtml(tangramList);
-            document.getElementById('display-list-matryo').innerHTML = renderPresentationItemsHtml(matryoList);
-        }
-
-        function renderPresentationItemsHtml(list) {
-            if (list.length === 0) {
-                return `<div class="text-center py-8 text-stone-500 text-sm">기록이 없습니다.</div>`;
-            }
-
-            return list.map((rec, idx) => {
-                const rank = idx + 1;
-                let rankBadge = '';
-                let bgStyle = 'bg-stone-800/80 border-stone-700/60';
-
-                if (rank === 1) {
-                    rankBadge = `<span class="text-2xl">🥇</span>`;
-                    bgStyle = 'bg-gradient-to-r from-amber-950/80 to-amber-900/40 border-amber-500/60 shadow-lg';
-                } else if (rank === 2) {
-                    rankBadge = `<span class="text-2xl">🥈</span>`;
-                    bgStyle = 'bg-stone-800 border-slate-500/50';
-                } else if (rank === 3) {
-                    rankBadge = `<span class="text-2xl">🥉</span>`;
-                    bgStyle = 'bg-stone-800 border-amber-800/50';
-                } else {
-                    rankBadge = `<span class="w-8 h-8 rounded-full bg-stone-700 text-stone-300 font-num font-bold text-sm flex items-center justify-center">${rank}</span>`;
-                }
-
-                return `
-                    <div class="p-3.5 rounded-2xl border ${bgStyle} flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            ${rankBadge}
-                            <div>
-                                <span class="text-xs font-bold text-amber-300 font-num bg-stone-900/80 px-2 py-0.5 rounded border border-amber-500/20 mr-1.5">${escapeHtml(rec.studentId)}</span>
-                                <span class="text-lg font-bold text-stone-100">${escapeHtml(rec.name)}</span>
-                            </div>
-                        </div>
-                        <span class="font-num font-extrabold text-xl text-amber-400">
-                            ${formatDisplayTime(rec.timeInSeconds)}
-                        </span>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        /* ==========================================================================
-           6. Manual Register, CSV Export & Helpers
-           ========================================================================== */
-        function openManualRegisterModal() {
-            document.getElementById('modal-manual').classList.remove('hidden');
-        }
-
-        function closeManualRegisterModal() {
-            document.getElementById('modal-manual').classList.add('hidden');
-        }
-
-        function handleManualSubmit(e) {
-            e.preventDefault();
-            const game = document.getElementById('manual-game-select').value;
-            const studentId = document.getElementById('manual-student-id').value.trim();
-            const name = document.getElementById('manual-name').value.trim();
-            const timeStr = document.getElementById('manual-time-input').value.trim();
-
-            const idRegex = /^\d{5}$/;
-            if (!idRegex.test(studentId)) {
-                showToast('학번은 5자리 숫자로 입력해야 합니다. (예: 10305)', 'warning');
-                return;
-            }
-
-            const timeSec = parseFloat(timeStr);
-            if (isNaN(timeSec) || timeSec <= 0) {
-                showToast('올바른 소요 시간(초)을 입력해 주세요.', 'warning');
-                return;
-            }
-
-            if (typeof window.saveNewRecord === 'function') {
-                window.saveNewRecord(studentId, name, game, timeSec);
-            }
-            closeManualRegisterModal();
-        }
-
-        function openDataModal() {
-            document.getElementById('modal-data').classList.remove('hidden');
-            renderModalTable();
-        }
-
-        function closeDataModal() {
-            document.getElementById('modal-data').classList.add('hidden');
-        }
-
-        function renderModalTable() {
-            const query = document.getElementById('modal-search-input').value.toLowerCase().trim();
-            const tbody = document.getElementById('modal-table-body');
-
-            let filtered = window.records;
-            if (query) {
-                filtered = window.records.filter(r => r.name.toLowerCase().includes(query) || r.studentId.includes(query));
-            }
-
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-stone-400">등록된 기록이 없습니다.</td></tr>`;
-                return;
-            }
-
-            const sorted = [...filtered].reverse();
-
-            tbody.innerHTML = sorted.map(rec => `
-                <tr class="hover:bg-stone-50 transition">
-                    <td class="p-2.5 font-bold ${rec.game === '칠교놀이' ? 'text-indigo-600' : 'text-rose-600'}">
-                        ${rec.game === '칠교놀이' ? '🧩' : '🪆'} ${rec.game}
-                    </td>
-                    <td class="p-2.5 font-num font-bold text-amber-800">${escapeHtml(rec.studentId)}</td>
-                    <td class="p-2.5 font-bold text-stone-800">${escapeHtml(rec.name)}</td>
-                    <td class="p-2.5 font-num font-bold text-stone-800">${formatDisplayTime(rec.timeInSeconds)}</td>
-                    <td class="p-2.5 text-stone-400 text-[11px]">${rec.timestamp}</td>
-                    <td class="p-2.5 text-center">
-                        <button onclick="window.deleteRecord('${rec.id}')" class="text-rose-500 hover:text-rose-700 px-2 py-1 rounded hover:bg-rose-50 transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function openConfirmResetModal() {
-            document.getElementById('modal-confirm-reset').classList.remove('hidden');
-        }
-
-        function closeConfirmResetModal() {
-            document.getElementById('modal-confirm-reset').classList.add('hidden');
-        }
-
+        // Export CSV
         function exportToCSV() {
-            if (window.records.length === 0) {
-                showToast('내보낼 기록 데이터가 없습니다.', 'warning');
+            if (records.length === 0) {
+                alert('내보낼 데이터가 없습니다.');
                 return;
             }
 
-            let csvContent = "\uFEFF"; // UTF-8 BOM for Hangul Excel compatibility
-            csvContent += "ID,종목,학번,참가자이름,소요시간(초),표기시간,등록시각\n";
-
-            window.records.forEach(r => {
-                const row = [
-                    `"${r.id}"`,
-                    `"${r.game}"`,
-                    `"${r.studentId}"`,
-                    `"${r.name.replace(/"/g, '""')}"`,
-                    r.timeInSeconds,
-                    `"${formatDisplayTime(r.timeInSeconds)}"`,
-                    `"${r.timestamp}"`
-                ];
-                csvContent += row.join(",") + "\n";
+            let csvContent = "\uFEFF종목,학번,이름,소요시간(초),등록일시\n";
+            records.forEach(r => {
+                const gameName = r.game === 'tangram' ? '칠교놀이' : '마트료시카';
+                csvContent += `"${gameName}","${r.studentId || ''}","${r.name}","${r.time}","${r.createdAt || ''}"\n`;
             });
 
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", `선부고_도서관축제_전통놀이_랭킹기록_${getFormattedDateForFile()}.csv`);
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showToast('CSV 엑셀 파일이 다운로드되었습니다.', 'success');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `선부고_전통놀이_전체기록_${new Date().toISOString().slice(0,10)}.csv`;
+            a.click();
         }
-
-        function loadSampleData() {
-            const sampleData = [
-                { id: 's1', studentId: '10305', name: '김민준', game: '칠교놀이', timeInSeconds: 14.82, timestamp: getFormattedNow() },
-                { id: 's2', studentId: '20112', name: '박서준', game: '칠교놀이', timeInSeconds: 19.35, timestamp: getFormattedNow() },
-                { id: 's3', studentId: '10518', name: '이하은', game: '칠교놀이', timeInSeconds: 22.10, timestamp: getFormattedNow() },
-                { id: 's4', studentId: '30201', name: '정민서', game: '마트료시카', timeInSeconds: 9.80, timestamp: getFormattedNow() },
-                { id: 's5', studentId: '10410', name: '강도윤', game: '마트료시카', timeInSeconds: 12.15, timestamp: getFormattedNow() }
-            ];
-
-            sampleData.forEach(item => {
-                if (typeof window.saveNewRecord === 'function') {
-                    window.saveNewRecord(item.studentId, item.name, item.game, item.timeInSeconds);
-                }
-            });
-
-            showToast('테스트 샘플 데이터가 추가되었습니다.', 'info');
-        }
-
-        function getFormattedNow() {
-            const now = new Date();
-            const month = String(now.getMonth() + 1).padStart(2, '0');
-            const day = String(now.getDate()).padStart(2, '0');
-            const hours = String(now.getHours()).padStart(2, '0');
-            const mins = String(now.getMinutes()).padStart(2, '0');
-            return `${month}-${day} ${hours}:${mins}`;
-        }
-
-        function getFormattedDateForFile() {
-            const now = new Date();
-            return `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
-        }
-
-        function escapeHtml(str) {
-            return String(str || '')
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        function triggerConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 110,
-                    spread: 85,
-                    origin: { y: 0.6 }
-                });
-            }
-        }
-
-        function showToast(message, type = 'info') {
-            const container = document.getElementById('toast-container');
-            if (!container) return;
-            const toast = document.createElement('div');
-            
-            let bgClass = 'bg-stone-800 text-white';
-            let icon = 'fa-circle-info';
-
-            if (type === 'success') {
-                bgClass = 'bg-emerald-700 text-white';
-                icon = 'fa-circle-check';
-            } else if (type === 'warning') {
-                bgClass = 'bg-amber-600 text-white';
-                icon = 'fa-triangle-exclamation';
-            } else if (type === 'gold') {
-                bgClass = 'bg-amber-500 text-amber-950 font-bold border border-amber-300';
-                icon = 'fa-trophy';
-            }
-
-            toast.className = `${bgClass} text-xs px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 transition-all duration-300 transform translate-y-2 pointer-events-auto max-w-sm`;
-            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${escapeHtml(message)}</span>`;
-
-            container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.classList.add('opacity-0', 'translate-y-4');
-                setTimeout(() => toast.remove(), 300);
-            }, 3500);
-        }
-
-        function startDisplayClock() {
-            setInterval(() => {
-                const now = new Date();
-                const timeStr = now.toLocaleTimeString('ko-KR', { hour12: false });
-                const dateStr = now.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', weekday: 'short' });
-                
-                const clockTime = document.getElementById('display-clock-time');
-                const clockDate = document.getElementById('display-clock-date');
-                if (clockTime) clockTime.innerText = timeStr;
-                if (clockDate) clockDate.innerText = dateStr;
-            }, 1000);
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            startDisplayClock();
-        });
     </script>
 </body>
 </html>
